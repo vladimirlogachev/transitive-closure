@@ -23,10 +23,15 @@ object TransitiveClosure extends App {
       val (alreadyFetchedIds, idsToFetch, allItems) = loopState
       repo.read(idsToFetch.toList).flatMap(newItems => {
         val idsToSkip = alreadyFetchedIds ++ newItems.map(_.id)
-        val remainingRefs = newItems.flatMap(_.references).removedAll(idsToSkip) // prevent from fetching existing items again
+        // prevent from fetching existing items again
+        val remainingRefs = newItems.flatMap(_.references).removedAll(idsToSkip)
         val updatedItems = allItems ++ newItems
-        if (remainingRefs.isEmpty) Applicative[F].pure(Right(updatedItems)) // exit recursion in 2 cases: items returned, no refs left AND no items returned (which is an illegal state, but anyways...)
-        else Applicative[F].pure(Left((idsToSkip, remainingRefs, updatedItems))) // continue recursion
+        // exit recursion in 2 cases:
+        // a) items returned, no refs left
+        // b) no items returned (which is an illegal state, but anyways...)
+        if (remainingRefs.isEmpty) Applicative[F].pure(Right(updatedItems))
+        // continue recursion
+        else Applicative[F].pure(Left((idsToSkip, remainingRefs, updatedItems)))
       })
     }
 
