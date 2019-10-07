@@ -41,7 +41,7 @@ object FooTestingTools {
 
 }
 
-class Exercises3Spec extends FlatSpec with Matchers {
+class TransitiveClosureSpec extends FlatSpec with Matchers {
 
   import FooTestingTools._
 
@@ -105,7 +105,7 @@ class Exercises3Spec extends FlatSpec with Matchers {
     result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4)
   }
 
-  "long chain of elements" should "should be traversed without stack overflow" in {
+  "long chain of elements" should "should be traversed without a stack overflow" in {
     val longChain = generateFooChain(3000)
 
     val (_, result) = TransitiveClosure.readClosure(WriterFooRepo(longChain), List(FooId(1))).run
@@ -122,6 +122,8 @@ class Exercises3Spec extends FlatSpec with Matchers {
   }
 
   "short chain of elements" should "fail if an Option monad fails" in {
+    // what this test covers is not an inconsistency case (which is not required by the objective)
+    // but instead it ensures the correct usage of flatMap, which should always return None if there ever was one.
     val inconsistentItems = List(Foo(FooId(1), List(FooId(2)), "data 1"))
 
     val resultOption = TransitiveClosure.readClosure(OptionFooRepo(inconsistentItems), List(FooId(1)))
