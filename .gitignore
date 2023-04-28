@@ -1,4 +1,13 @@
-*.class
-*.log
-.idea
+# Project-specific
 target/
+
+# Editor-specific
+.bloop
+.bsp
+**/.metals/
+.vscode
+.idea
+**/metals.sbt
+
+# Logs
+*.log*
