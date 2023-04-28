@@ -16,7 +16,8 @@ object FooTestingTools {
         Vector(ids.map(_.value)),
         ids
           .flatMap(id => existingItems.find(_.id == id))
-          .toSet)
+          .toSet
+      )
   }
 
   // generate list of items with 1-based ids.
