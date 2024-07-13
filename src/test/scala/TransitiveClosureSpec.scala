@@ -1,12 +1,21 @@
-import foo._
+package transitiveClosure
 
 import cats.data.Writer
 import cats.implicits._
-import org.scalatest._
-import flatspec._
-import matchers._
+import org.scalatest.flatspec._
+import org.scalatest.Checkpoints._
+import org.scalatest.Assertion
+import org.scalatest.Succeeded
+import org.scalatest.matchers._
 
-object FooTestingTools {
+object TransitiveClosureTestingTools {
+
+  def combineAssertions(assertions: Seq[Assertion]): Assertion = {
+    val cp = new Checkpoint
+    assertions.foreach(x => cp(x: Unit))
+    cp.reportAll()
+    Succeeded
+  }
 
   type Log = Vector[List[Int]]
 
@@ -17,7 +26,7 @@ object FooTestingTools {
       Writer(
         Vector(ids.map(_.value)),
         ids
-          .flatMap(id => existingItems.find(_.id == id))
+          .flatMap(id => existingItems.find(_.id === id))
           .toSet
       )
 
@@ -27,18 +36,18 @@ object FooTestingTools {
   // Each of them is linked to the next one, but the last one is not linked
   def generateFooChain(count: Int): List[Foo] =
     (1 to count)
-      .map(n => Foo(FooId(n), if (n == count) List.empty else List(FooId(n + 1)), s"data $n"))
+      .map(n => Foo(FooId(n), if (n === count) List.empty else List(FooId(n + 1)), s"data $n"))
       .toList
 
   def eachRequestedExactlyOnce(log: Log): Boolean = {
     val sorted = log.flatten.sorted
-    sorted == sorted.distinct
+    sorted === sorted.distinct
   }
 
   case class OptionFooRepo(existingItems: List[Foo]) extends FooRepository[Option] {
     def read(ids: List[FooId]): Option[Set[Foo]] =
       ids
-        .map(id => existingItems.find(_.id == id))
+        .map(id => existingItems.find(_.id === id))
         .sequence
         .map(_.toSet)
 
@@ -48,16 +57,21 @@ object FooTestingTools {
 
 class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
 
-  import FooTestingTools._
+  import TransitiveClosureTestingTools._
 
   "short chain of elements" should "be traversed as expected" in {
+
     val shortChain = generateFooChain(3)
 
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(shortChain), List(FooId(1))).run
 
-    log shouldBe Vector(List(1), List(2), List(3))
-    eachRequestedExactlyOnce(log) shouldBe true
-    result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3)
+    combineAssertions(
+      List(
+        log shouldBe Vector(List(1), List(2), List(3)),
+        eachRequestedExactlyOnce(log) shouldBe true,
+        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3)
+      )
+    )
   }
 
   "tree-like structure" should "be traversed as expected" in {
@@ -72,9 +86,13 @@ class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
 
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(treeItems), List(FooId(1))).run
 
-    log shouldBe Vector(List(1), List(2, 4), List(3, 5))
-    eachRequestedExactlyOnce(log) shouldBe true
-    result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
+    combineAssertions(
+      List(
+        log shouldBe Vector(List(1), List(2, 4), List(3, 5)),
+        eachRequestedExactlyOnce(log) shouldBe true,
+        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
+      )
+    )
   }
 
   "diamond-like structure" should "be traversed as expected" in {
@@ -89,9 +107,13 @@ class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
 
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(diamondItems), List(FooId(1))).run
 
-    log shouldBe Vector(List(1), List(2, 3, 4), List(5))
-    eachRequestedExactlyOnce(log) shouldBe true
-    result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
+    combineAssertions(
+      List(
+        log shouldBe Vector(List(1), List(2, 3, 4), List(5)),
+        eachRequestedExactlyOnce(log) shouldBe true,
+        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
+      )
+    )
   }
 
   "circle-like structure" should "be traversed as expected" in {
@@ -105,9 +127,13 @@ class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
 
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(circleItems), List(FooId(1))).run
 
-    log shouldBe Vector(List(1), List(2), List(3), List(4))
-    eachRequestedExactlyOnce(log) shouldBe true
-    result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4)
+    combineAssertions(
+      List(
+        log shouldBe Vector(List(1), List(2), List(3), List(4)),
+        eachRequestedExactlyOnce(log) shouldBe true,
+        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4)
+      )
+    )
   }
 
   "long chain of elements" should "should be traversed without a stack overflow" in {
