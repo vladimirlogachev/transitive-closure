@@ -12,7 +12,11 @@ object TransitiveClosureTestingTools {
 
   def combineAssertions(assertions: Seq[Assertion]): Assertion = {
     val cp = new Checkpoint
-    assertions.foreach(x => cp(x: Unit))
+    assertions.foreach(x =>
+      cp {
+        val _ = x;
+      }
+    )
     cp.reportAll()
     Succeeded
   }
