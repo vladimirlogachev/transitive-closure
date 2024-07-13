@@ -1,9 +1,15 @@
-package foo
+package transitiveClosure
 
-import cats.{Applicative, Monad}
+import cats.Applicative
+import cats.Monad
 import cats.implicits._
+import cats.kernel.Eq
 
 final case class FooId(value: Int) extends AnyVal
+
+object FooId {
+  implicit val eqFooId: Eq[FooId] = Eq.fromUniversalEquals
+}
 
 final case class Foo(
     id: FooId,
