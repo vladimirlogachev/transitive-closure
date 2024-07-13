@@ -3,6 +3,8 @@ import foo._
 import cats.data.Writer
 import cats.implicits._
 import org.scalatest._
+import flatspec._
+import matchers._
 
 object FooTestingTools {
 
@@ -42,7 +44,7 @@ object FooTestingTools {
 
 }
 
-class TransitiveClosureSpec extends FlatSpec with Matchers {
+class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
 
   import FooTestingTools._
 
