@@ -10,7 +10,7 @@ import org.scalatest.matchers._
 
 object TransitiveClosureTestingTools {
 
-  def combineAssertions(assertions: Seq[Assertion]): Assertion = {
+  def combineAssertions(assertions: Assertion*): Assertion = {
     val cp = new Checkpoint
     assertions.foreach(x =>
       cp {
@@ -70,11 +70,9 @@ class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(shortChain), List(FooId(1))).run
 
     combineAssertions(
-      List(
-        log shouldBe Vector(List(1), List(2), List(3)),
-        eachRequestedExactlyOnce(log) shouldBe true,
-        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3)
-      )
+      log shouldBe Vector(List(1), List(2), List(3)),
+      eachRequestedExactlyOnce(log) shouldBe true,
+      result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3)
     )
   }
 
@@ -91,11 +89,9 @@ class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(treeItems), List(FooId(1))).run
 
     combineAssertions(
-      List(
-        log shouldBe Vector(List(1), List(2, 4), List(3, 5)),
-        eachRequestedExactlyOnce(log) shouldBe true,
-        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
-      )
+      log shouldBe Vector(List(1), List(2, 4), List(3, 5)),
+      eachRequestedExactlyOnce(log) shouldBe true,
+      result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
     )
   }
 
@@ -112,11 +108,9 @@ class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(diamondItems), List(FooId(1))).run
 
     combineAssertions(
-      List(
-        log shouldBe Vector(List(1), List(2, 3, 4), List(5)),
-        eachRequestedExactlyOnce(log) shouldBe true,
-        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
-      )
+      log shouldBe Vector(List(1), List(2, 3, 4), List(5)),
+      eachRequestedExactlyOnce(log) shouldBe true,
+      result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4, 5)
     )
   }
 
@@ -132,11 +126,9 @@ class TransitiveClosureSpec extends AnyFlatSpec with should.Matchers {
     val (log, result) = TransitiveClosure.readClosure(WriterFooRepo(circleItems), List(FooId(1))).run
 
     combineAssertions(
-      List(
-        log shouldBe Vector(List(1), List(2), List(3), List(4)),
-        eachRequestedExactlyOnce(log) shouldBe true,
-        result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4)
-      )
+      log shouldBe Vector(List(1), List(2), List(3), List(4)),
+      eachRequestedExactlyOnce(log) shouldBe true,
+      result.map(_.id.value).toList.sorted shouldBe List(1, 2, 3, 4)
     )
   }
 
