@@ -2,10 +2,10 @@ package transitiveClosure
 
 import cats.data.Writer
 import cats.implicits._
-import org.scalatest.flatspec._
-import org.scalatest.Checkpoints._
 import org.scalatest.Assertion
+import org.scalatest.Checkpoints._
 import org.scalatest.Succeeded
+import org.scalatest.flatspec._
 import org.scalatest.matchers._
 
 object TransitiveClosureTestingTools {
