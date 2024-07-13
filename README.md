@@ -1,6 +1,7 @@
 # transitive-closure
 
 Coding assessment (Scala 3, Cats, ScalaTest).
+
 Completed in 2019, and currently maintained as a demonstration project.
 
 ## Pre-requisites
