@@ -45,4 +45,5 @@ object TransitiveClosure extends App {
         Monad[F].tailRecM((idsToSkip, notFetchedIds, results))(loop)
       })
   }
+
 }

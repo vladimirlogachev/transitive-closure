@@ -20,6 +20,7 @@ object FooTestingTools {
           .flatMap(id => existingItems.find(_.id == id))
           .toSet
       )
+
   }
 
   // generate list of items with 1-based ids.
@@ -40,6 +41,7 @@ object FooTestingTools {
         .map(id => existingItems.find(_.id == id))
         .sequence
         .map(_.toSet)
+
   }
 
 }
