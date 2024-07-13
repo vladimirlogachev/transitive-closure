@@ -32,4 +32,4 @@ jobs:
         java-version: adopt@1.11
 
     - name: Compile, check formatting, lint, and run tests
-      run: sbt compile test
+      run: sbt ci compile styleCheck test
