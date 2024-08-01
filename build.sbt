@@ -7,10 +7,14 @@ lazy val root = project
     version      := "0.1.0-SNAPSHOT",
     scalaVersion := scala3Version,
     run / fork   := true, // Makes exit codes work as expected
+    // fp
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.12.0",
-      "org.scalatest" %% "scalatest" % "3.2.19" % Test
+      "org.typelevel" %% "cats-core" % Versions.cats
     ),
+    // tests
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % Versions.scalaTest
+    ).map(_ % Test),
     // Scalafix
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision
