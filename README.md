@@ -14,7 +14,6 @@ Completed in 2019, and currently maintained as a demonstration project.
 - `sbt styleFix` - fix formatting and linting errors
 - `sbt styleCheck` - check for formatting and linting errors
 - `sbt dev` - allow compiler warnings to not fail the compilation
-- `sbt dependencyUpdates` - list dependency updates
 
 ## Objective
 
